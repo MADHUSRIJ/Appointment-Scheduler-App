@@ -21,7 +21,7 @@ namespace Application_Scheduler.Controllers
         readonly AppointmentSchedulerDbContext db;
         private readonly SqlConnection sqlConnection;
         private readonly IServiceCollection services;
-        public static UserModel User { get; set; }
+        public static UserModel UserModel { get; set; }
 
         public AccountController(AppointmentSchedulerDbContext context, IConfiguration configuration)
         {
@@ -46,6 +46,16 @@ namespace Application_Scheduler.Controllers
         {
             //check if the employee already exists
 
+
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                // If the user is already authenticated, redirect them to the Home/Index action
+                ViewData["Message"] = "You must be authenticated to access this page.";
+            }
+
+            
+
             user.UserName = Request.Form["UserName"];
             user.Password = Request.Form["Password"];
 
@@ -59,7 +69,7 @@ namespace Application_Scheduler.Controllers
             //Generate jwt token for authentication if passwod matches and also import the necessary package
             if (reader.Read())
             {
-                User = user;
+                UserModel = user;
                 try
                 {
                   

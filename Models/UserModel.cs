@@ -24,7 +24,8 @@ namespace Application_Scheduler.Models
         public string? MobileNumber { get; set; }
 
         [Required]
-        public bool RememberMe { get; set; } 
+        public bool RememberMe { get; set; }
+
 
 
         public bool VerifyUser(SqlConnection sqlConnection)

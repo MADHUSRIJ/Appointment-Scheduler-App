@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application_Scheduler.Models
@@ -34,6 +35,9 @@ namespace Application_Scheduler.Models
         [Required]
         [ForeignKey("USERS")]
         public int UserId { get; set; }
+
+        [Required]
+        public bool SetReminder { get; set; }
 
     }
 }

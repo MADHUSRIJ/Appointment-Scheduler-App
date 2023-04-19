@@ -4,36 +4,94 @@
 
 @model UserModel
 
-<h1>@ViewData["Title"]</h1>
 
-<div class="row">
-    <div class="col-md-4">
+
+<style>
+    .loginContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loginContent {
+        background-color: rgba(253, 230, 255, 0.8);
+        border: 1px solid rgba(252, 210, 255, 0.8);
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        width: 30em;
+        padding: 3em;
+        border-radius: 10px;
+        margin-top: 5em;
+    }
+
+    .textField {
+        margin-left: 2em;
+        margin-right: 2em;
+        margin-bottom: 1em;
+    }
+
+    .Label {
+        margin-bottom: 1em;
+        color: rgba(0, 95, 167, 1);
+    }
+
+    .btn {
+        background-color: rgba(0, 95, 167, 1);
+        color: #fff;
+        border-radius: 5px;
+        padding: 10px 50px;
+        font-size: 1em;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn:hover {
+            background-color: #fff;
+            color: rgba(0, 95, 167, 1);
+            box-shadow: 0px 0px 10px rgba(0, 95, 167, 1);
+        }
+
+    .Buttons {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        margin-top: 3em;
+    }
+
+</style>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="alert alert-info" role="alert">
+        You must be authenticated to access this page.
+    </div>
+}
+
+
+<div class="row loginContainer">
+    <div class="col-md-4 loginContent">
+        <p style="color:rgba(0, 95, 167, 1);" class="fw-bold"><i style="color:rgba(0, 95, 167, 1);" class="bi bi-balloon-heart-fill"></i>Appointy</p>
+        <h6 style="color:rgba(98, 98, 98, 0.8)" class="fw-lighter">Login to your account to be on your schedule.</h6>
+        <hr />
         <form asp-action="Login" asp-controller="Account" method="post" class="form-horizontal">
-            <h4>Use a local account to log in.</h4>
-            <hr />
+
             <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
+            <div class="form-group textField">
+                <label asp-for="UserName" class="control-label Label">Username</label>
+                <input type="text" asp-for="UserName" class="form-control" />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+            <div class="form-group textField">
+                <label asp-for="Password" class="control-label Label">Password</label>
+                <input type="password" asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-default">Log in</button>
+            <div class="form-group Buttons">
+                <button type="submit" class="btn">Log in</button>
+                <a asp-controller="Account" asp-action="Register"><button class="btn">Register</button></a>
             </div>
-            <div class="form-group">
-                <p>
-                    <a asp-controller="Account" asp-action="ForgotPassword">Forgot your password?</a>
-                </p>
-                <p>
-                    <a asp-controller="Account" asp-action="Register">Register as a new user</a>
-                </p>
-            </div>
+
+
         </form>
     </div>
 </div>

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Application_Scheduler.Migrations
 {
     [DbContext(typeof(AppointmentSchedulerDbContext))]
-    [Migration("20230418150829_InitialMigratin")]
-    partial class InitialMigratin
+    [Migration("20230419180208_SendReinder")]
+    partial class SendReinder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,20 +77,23 @@ namespace Application_Scheduler.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobileNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RememberMe")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SendReminder")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .IsRequired()

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Application_Scheduler.Migrations
 {
     [DbContext(typeof(AppointmentSchedulerDbContext))]
-    [Migration("20230419034953_RemoveRequired")]
-    partial class RemoveRequired
+    [Migration("20230419180621_deletereminder")]
+    partial class deletereminder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,6 +88,9 @@ namespace Application_Scheduler.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RememberMe")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .IsRequired()

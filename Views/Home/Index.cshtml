@@ -1,10 +1,312 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
-     Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@section scripts {
+    <script>
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const views = document.querySelectorAll('.view');
+
+        sidebarLinks.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const targetView = document.querySelector(event.target.hash);
+                if (!targetView.classList.contains('active')) {
+                    views.forEach((view) => view.classList.remove('active'));
+                    targetView.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+}
+
+<style>
+    .sidebar {
+        width: 300px;
+        height: 100%;
+        background-color: rgba(253, 230, 255, 0.8);
+        position: fixed;
+        top: 0;
+        left: 0;
+        overflow-y: auto;
+    }
+
+    .sidebar-heading {
+        font-weight: bold;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .sidebar-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-item {
+        margin: 10px;
+    }
+
+    .appointment-item {
+        background-color: rgba(0, 95, 167, 1);
+        border-radius: 5px;
+        margin-top: 2em;
+        align-items: center;
+    }
+
+    .appointment-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        text-decoration: none;
+        color: #fff !important;
+        padding: 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .sidebar-item.appointment-item a.appointment-link:hover {
+        background-color: white;
+        color: rgba(0, 95, 167, 1) !important;
+        border: 1px solid rgba(0, 95, 167, 1);
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #000;
+        padding: 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .sidebar-link:hover {
+            background-color: rgba(245, 129, 255, 0.8);
+            color: white;
+        }
+
+        .sidebar-link.active {
+            background-color: rgba(245, 129, 255, 0.8);
+            font-weight: bold;
+            color: white;
+        }
+
+    .main-content {
+        margin-left: 200px;
+        padding: 20px;
+    }
+
+    .sidebar-title {
+        margin-right: 1em;
+    }
+
+    .view {
+        display: none;
+    }
+
+        .view.active {
+            display: block;
+        }
+
+    .Content {
+        margin-left: 2em;
+    }
+
+    .content-title {
+        margin-top: 2em;
+        color: rgba(129, 127, 191, 1);
+    }
+
+    .appointment-container {
+        margin-top: 2em;
+        border-radius: 10px;
+        padding: 10px 10px 10px 10px;
+    }
+
+    .appointment-container-inside {
+        background-color: rgba(232, 228, 255, 0.49);
+        border: 1px solid rgba(129, 127, 191, 1);
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 1em;
+    }
+
+    .appointment-title {
+        max-height: 3em;
+        overflow-wrap: break-word;
+        overflow: clip;
+        font-weight: bold;
+        text-align: start;
+    }
+
+    .appointment-description {
+        margin-top: 1em;
+        max-height: 4.5em;
+        overflow-wrap: break-word;
+        overflow: hidden;
+        text-align: justify;
+    }
+
+    .appointment-timings {
+        margin-top: 2em;
+        color: rgba(253, 123, 0, 0.49);
+        font-weight: bold;
+    }
+
+    .appointment-status {
+        color: rgba(253, 0, 40, 0.49);
+        font-weight: bold;
+    }
+
+    .appointment-type {
+        color: rgba(3, 131, 252, 0.49);
+        font-weight: bold;
+    }
+
+    .btn {
+        background-color: rgba(176, 162, 255, 0.49);
+        color: rgba(99, 76, 221, 0.49);
+        border-radius: 5px;
+        width: 100px;
+        padding: 10px;
+        font-size: 1em;
+        margin-bottom: 2em;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn:hover {
+            background-color: #fff;
+            color: rgba(176, 162, 255, 0.49);
+            box-shadow: 0px 0px 10px rgba(176, 162, 255, 0.49);
+        }
+
+</style>
+
+<div class="sidebar">
+    <div class="sidebar-heading" style="margin-top:1em;">
+        <h4 style="color:rgba(0, 95, 167, 1);" class="fw-bold"><i style="color:rgba(0, 95, 167, 1);" class="bi bi-balloon-heart-fill"></i>Appointy</h4>
+    </div>
+    <ul class="sidebar-nav">
+        <li class="sidebar-item active">
+            <a href="#today" class="sidebar-link">
+                <i class="bi bi-calendar-day-fill sidebar-title"></i>
+                Today
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#upcoming" class="sidebar-link">
+                <i class="bi bi-stickies-fill sidebar-title"></i>
+                Upcoming
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#completed" class="sidebar-link">
+                <i class="bi bi-bookmark-star-fill sidebar-title"></i>
+                Completed
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#cancelled" class="sidebar-link">
+                <i class="bi bi-x-square-fill sidebar-title"></i>
+                Cancelled
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#your-profile" class="sidebar-link">
+                <i class="bi bi-person-fill sidebar-title"></i>
+                Your Profile
+            </a>
+        </li>
+        <li class="sidebar-item appointment-item">
+            <a href="#add-new-appointment" class="sidebar-link appointment-link">
+
+                + Add New Appointment
+            </a>
+        </li>
+    </ul>
 </div>
+
+<div class="main-content">
+    <div id="today" class="view active Content">
+        <h3 class="content-title">Today's Appointments</h3>
+        <div class="appointment-container" style="">
+            <div class="row appointment-container-inside">
+                <div class="col-md-10" style="">
+                    <div class="row">
+                        <div class="col-md-8 appointment-title">
+                            Application Title
+                            Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title Application Title
+                        </div>
+                        <div class="col-md-4">
+                            <div class="appointment-type">
+                                Appointment Type
+                            </div>
+                            <div class="appointment-status">
+                                Appointment Status
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="appointment-description">
+                        Appointment Description
+                        Appointment Description Appointment Description
+                        Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description Appointment Description
+                    </div>
+                    <div class="row appointment-timings">
+                        <div class="col-md-3">
+                            <p>Date - 19-04-2023 </p>
+                        </div>
+                        <div class="col-md-4">
+                            Starting Time - 19:51
+                        </div>
+                        <div class="col-md-3">
+                            Duration - 30 Min
+                        </div>
+                        <div class="col-md-2">
+                            <i class="bi bi-alarm-fill" style="color:rgba(96, 89, 190, 0.97);font-size:20px"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2" style="">
+                    <div class="appointment-options">
+                        <button class="btn"><i class="bi bi-eye-fill" style="margin-right:0.5em;"></i>View</button>
+                    </div>
+                    <div class="appointment-options">
+                        <button class="btn"><i class="bi bi-pencil-fill" style="margin-right:0.5em;"></i>Edit</button>
+                    </div>
+                    <div class="appointment-options">
+                        <button class="btn"><i class="bi bi-trash-fill" style="margin-right:0.5em;"></i>Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="upcoming" class="view Content">
+        <h3 class="content-title">Upcoming Appointments</h3>
+        <!-- Upcoming view content here -->
+    </div>
+    <div id="completed" class="view Content">
+        <h3 class="content-title">Completed Appointments</h3>
+        <!-- Completed view content here -->
+    </div>
+    <div id="cancelled" class="view Content">
+        <h3 class="content-title">Cancelled Appointments</h3>
+        <!-- Cancelled view content here -->
+    </div>
+    <div id="your-profile" class="view Content">
+        <h3 class="content-title">Your Profile</h3>
+        <!-- Add New Appointment view content here -->
+    </div>
+    <div id="add-new-appointment" class="view Content">
+        <h3 class="content-title">Add New Appointment</h3>
+        <!-- Add New Appointment view content here -->
+    </div>
+
+</div>
+
