@@ -16,8 +16,17 @@ namespace Application_Scheduler.Controllers
         }
 
 
-       
-        public IActionResult Index()
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        // POST: AppointmentsController
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Index(IFormCollection form)
         {
             return View();
         }

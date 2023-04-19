@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Text;
 
 namespace Application_Scheduler
@@ -14,6 +14,8 @@ namespace Application_Scheduler
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -24,14 +26,39 @@ namespace Application_Scheduler
                         builder.Configuration.GetConnectionString("AppointmentSchedulerDb")
                     )
             );
+
+
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-        options => builder.Configuration.Bind("JwtSettings", options))
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-        options => builder.Configuration.Bind("CookieSettings", options));
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "your-issuer",
+                ValidAudience = "your-audience",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("My top secerete Key"))
+            };
+        });
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+.AddCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+});
 
 
+            builder.Services.AddLogging();
 
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

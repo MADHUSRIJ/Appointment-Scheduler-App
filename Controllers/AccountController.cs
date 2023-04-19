@@ -13,6 +13,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Application_Scheduler.Controllers
 {
@@ -20,6 +23,7 @@ namespace Application_Scheduler.Controllers
     {
         private readonly AppointmentSchedulerDbContext _context;
         private readonly IConfiguration configuration;
+        readonly AppointmentSchedulerDbContext db;
         private readonly SqlConnection sqlConnection;
         private readonly IServiceCollection services;
         public static UserModel User { get; set; }
@@ -32,42 +36,115 @@ namespace Application_Scheduler.Controllers
 
         }
 
+/*
+        // GET: AccountController/Login
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: AccountController/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(UserModel user)
+        {
+
+            try
+            {
+                user.UserName = Request.Form["UserName"];
+                user.Password = Request.Form["Password"];
+                Console.WriteLine("Passsss " + user.Password);
+                ;
+
+                if (user.VerifyUser(sqlConnection))
+                {
+                    ViewBag.Error = "";
+                    HttpContext.Response.Cookies.Append("logged_in", "true");
+                    HttpContext.Response.Cookies.Append("current_user_email", user.Email!);
+                    HttpContext.Response.Cookies.Append("current_user_name", user.UserName!);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ViewBag.Error = "Username or Password Incorrect";
+                    return View();
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return View();
+            }
+        }
+
+        // GET: AccountController/Logout
+        public ActionResult logout()
+        {
+            Response.Cookies.Delete("logged_in");
+            return RedirectToAction("Index", "Home");
+
+        }*/
+
         [HttpGet]
         public IActionResult Login()
         {
-            UserModel user = getCurrentUser();
-            ViewBag.user = user;
+           
 
             return View();
         }
 
         [HttpPost]
-        public IActionResult Login(UserModel user)
+        public async Task<IActionResult> Login(UserModel user)
         {
-
             if (user.VerifyUser(sqlConnection))
             {
                 User = user;
-                Startup hello = new Startup();
-                //hello.ConfigureServices(services,configuration);
+                var identity = new ClaimsIdentity(new[]
+                {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Sid, user.UserId.ToString()),
+            new Claim(ClaimTypes.MobilePhone, user.MobileNumber),
+            new Claim(ClaimTypes.Email, user.Email),
+        }, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                try
+                {
+                    var principal = new ClaimsPrincipal(identity);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Login Exception "+ex.Message);
+                       
+                }
                 Console.WriteLine("Inside Login Post");
                 string token = CreateToken();
-                //Response.Headers.Add("Authorization", "Bearer "+ token);
+                Console.WriteLine("Token " + token);
+
+                UserModel ser = GetCurrentUser();
+
+                Response.Headers.Add("Authorization", "Bearer " + token);
                 Response.Cookies.Append("auth_token", token);
-                return RedirectToAction("Index","Home");
+
+                return RedirectToAction("Index", "Home");
             }
+
             return View();
         }
+
 
         [HttpPost]
         public string CreateToken()
         {
-            List<Claim> claim = new List<Claim>() {
-            new Claim(ClaimTypes.Name, User.UserName!),
-            new Claim(ClaimTypes.Sid,User.UserId.ToString()),
-            new Claim(ClaimTypes.MobilePhone,User.MobileNumber!),
-            new Claim(ClaimTypes.Email,User.Email!)
-            };
+            Console.WriteLine("Create Token "+ User.UserName);
+            var claim = new List<Claim>() {
+        new Claim(ClaimTypes.Name, User.UserName!),
+        new Claim(ClaimTypes.Sid, User.UserId.ToString()),
+        new Claim(ClaimTypes.MobilePhone, User.MobileNumber!),
+        new Claim(ClaimTypes.Email, User.Email!)
+    };
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
                 configuration.GetSection("AppSettings:Token").Value!
                 ));
@@ -84,27 +161,19 @@ namespace Application_Scheduler.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult register()
-        {
-
-            return View();
-        }
-
-        private UserModel getCurrentUser()
+        private UserModel GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            Console.WriteLine(identity);
+            Console.WriteLine("Curre user "+User.UserName);
 
-            string authorizationHeader = HttpContext.Request.Headers["Authorization"]!;
-            if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer "))
-            {
-                string token = authorizationHeader.Substring("Bearer ".Length).Trim();
-                
-            }
             if (identity != null)
             {
+                Console.WriteLine("Identity name: " + identity.Name);
+                Console.WriteLine("Identity authentication type: " + identity.AuthenticationType);
+                Console.WriteLine("Identity claims count: " + identity.Claims.Count());
+
                 var userClaims = identity.Claims;
+                Console.WriteLine("Get curr "+ userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value);
                 return new UserModel
                 {
                     UserName = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
@@ -113,11 +182,27 @@ namespace Application_Scheduler.Controllers
                     Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
                 };
             }
+
             return null;
+        }
+
+        public ActionResult Logout()
+        {
+            return RedirectToAction("Login","Account");
+        }
+
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+
+            return View();
         }
 
 
 
-        
+
+
+
     }
 }

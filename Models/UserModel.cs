@@ -16,13 +16,11 @@ namespace Application_Scheduler.Models
         [Required]
         public string? Password { get; set; }
 
-        [Required]
         public string? Name { get; set; }
 
-        [Required]
+      
         public string? Email { get; set; }
     
-        [Required]
         public string? MobileNumber { get; set; }
 
 
@@ -51,7 +49,7 @@ namespace Application_Scheduler.Models
                         Console.WriteLine("Inside Verify User "+this.UserName);
 
                         // Erasing the password.
-                        this.Password = "";
+                        this.Password = (string)reader["Password"];
                         return true;
                     }
                 }

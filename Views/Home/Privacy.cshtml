@@ -1,8 +1,9 @@
-﻿@page
-@{
+﻿@{
     ViewData["Title"] = "Privacy Policy";
-    Layout = "~/Views/Account/Login.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
+
+@Html.ActionLink("Logout", "Logout", "Account")
