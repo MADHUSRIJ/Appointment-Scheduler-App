@@ -16,7 +16,7 @@ namespace Application_Scheduler.Controllers
         }
 
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         [HttpGet]
         public ActionResult Index()
         {

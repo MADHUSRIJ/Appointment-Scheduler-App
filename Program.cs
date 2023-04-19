@@ -2,9 +2,12 @@ using Application_Scheduler.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application_Scheduler
 {
@@ -34,13 +37,15 @@ namespace Application_Scheduler
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
+               
+                ClockSkew = TimeSpan.Zero,
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = "your-issuer",
-                ValidAudience = "your-audience",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("My top secerete Key"))
+                ValidIssuer = configuration["Jwt:Issuer"],
+                ValidAudience = configuration["Jwt:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
             };
         });
             builder.Services.AddAuthentication(options =>
@@ -54,11 +59,23 @@ namespace Application_Scheduler
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
 });
-
+            builder.Services.AddAuthorization();
 
             builder.Services.AddLogging();
 
-            
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppointmentSchedulerDbContext>()
+    .AddDefaultTokenProviders();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.Cookie.Name = "YourCookieName";
+                options.Cookie.HttpOnly = true;
+                options.SlidingExpiration = true;
+            });
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -76,9 +93,12 @@ namespace Application_Scheduler
 
             app.UseAuthorization();
 
-            app.MapControllerRoute(
+            
+
+
+                        app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=Login}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }
