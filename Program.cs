@@ -2,12 +2,11 @@ using Application_Scheduler.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors;
 
 namespace Application_Scheduler
 {
@@ -22,6 +21,8 @@ namespace Application_Scheduler
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddMvc();
+            
             builder.Services.AddDbContext<AppointmentSchedulerDbContext>(
                 options =>
                     options.UseSqlServer
@@ -63,14 +64,17 @@ namespace Application_Scheduler
 
             builder.Services.AddLogging();
 
+           
+
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppointmentSchedulerDbContext>()
     .AddDefaultTokenProviders();
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.Cookie.Name = "YourCookieName";
-                options.Cookie.HttpOnly = true;
+                options.Cookie.Name = "auth_token";
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.None;
                 options.SlidingExpiration = true;
             });
 
@@ -85,6 +89,8 @@ namespace Application_Scheduler
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseCors(builder =>
+       builder.WithOrigins("*"));
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

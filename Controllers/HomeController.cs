@@ -18,6 +18,7 @@ namespace Application_Scheduler.Controllers
 
         [Authorize]
         [HttpGet]
+        [IgnoreAntiforgeryToken]
         public ActionResult Index()
         {
             return View();
@@ -25,7 +26,7 @@ namespace Application_Scheduler.Controllers
 
         // POST: AppointmentsController
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         public ActionResult Index(IFormCollection form)
         {
             return View();

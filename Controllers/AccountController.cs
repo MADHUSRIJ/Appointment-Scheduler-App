@@ -42,6 +42,7 @@ namespace Application_Scheduler.Controllers
 
         [HttpPost]
         [Route("/Home")]
+        [IgnoreAntiforgeryToken]
         public IActionResult Login(UserModel user)
         {
             //check if the employee already exists
@@ -100,24 +101,22 @@ namespace Application_Scheduler.Controllers
                    signingCredentials: creds);
 
                         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
                         // Set the token as a cookie in the response
-                        Response.Cookies.Append("AuthToken", tokenString, new CookieOptions
+                        Response.Cookies.Append("auth_token", tokenString, new CookieOptions
                         {
-                            HttpOnly = true,
-                            SameSite = SameSiteMode.Strict,
+                            SameSite = SameSiteMode.None ,
+                            Secure = true,
                             Expires = DateTime.Now.AddDays(7) // Set the expiration time to 7 days
                         });
-                        Console.WriteLine("Token " + new JwtSecurityTokenHandler().WriteToken(token));
 
-                        
+                        Console.WriteLine("Token " + new JwtSecurityTokenHandler().WriteToken(token));
 
                     }
                     
                     reader.Close();
                     sqlConnection.Close();
                     // Redirect to Home/Index action
-                    return View("~/Views/Home/Index.cshtml");
+                    return RedirectToAction("Index","Home");
 
                 
                 }
